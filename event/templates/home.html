@@ -1,0 +1,267 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Home{% endblock %}
+{% block content %}
+
+<script>
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const target = eventDate.getTime();
+    const gap = target - now;
+
+    if (gap <= 0) {
+      document.getElementById("days").textContent = "00";
+      document.getElementById("hours").textContent = "00";
+      document.getElementById("minutes").textContent = "00";
+      document.getElementById("seconds").textContent = "00";
+      return;
+    }
+
+    const second = 1000;
+    const minute = second * 60;
+    const hour = minute * 60;
+    const day = hour * 24;
+
+    const d = Math.floor(gap / day);
+    const h = Math.floor((gap % day) / hour);
+    const m = Math.floor((gap % hour) / minute);
+    const s = Math.floor((gap % minute) / second);
+
+    document.getElementById("days").textContent = String(d).padStart(2, "0");
+    document.getElementById("hours").textContent = String(h).padStart(2, "0");
+    document.getElementById("minutes").textContent = String(m).padStart(2, "0");
+    document.getElementById("seconds").textContent = String(s).padStart(2, "0");
+  }
+
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+</script>
+
+<section class="h-[calc(100vh-4rem)] flex items-center py-16">
+  <div
+    class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-24 lg:gap-32 items-center"
+  >
+    <!-- Text Section -->
+    <div class="text-center md:text-left">
+      {% if upcoming_event %}
+      <h2 class="sm:text-xl lg:text-5xl font-light text-indigo-400 leading-tight">
+        {{ upcoming_event.name }} <br />
+        <span class="font-bold text-indigo-600"
+          >Conference {{ upcoming_event.date|date:"Y" }}</span
+        >
+      </h2>
+      <p class="mt-4 text-gray-500 text-lg">
+        {{ upcoming_event.date|date:"F d, Y" }}. {{ upcoming_event.location }}
+      </p>
+
+      <!-- Countdown Timer -->
+      <div
+        class="mt-5 grid grid-cols-4 gap-4 text-indigo-500 max-w-xs mx-auto md:mx-0"
+      >
+        <div class="">
+          <p id="days" class="text-3xl font-light">--</p>
+          <p class="text-sm text-gray-400">Days</p>
+        </div>
+        <div class="text-center">
+          <p id="hours" class="text-3xl font-light">--</p>
+          <p class="text-sm text-gray-400">Hours</p>
+        </div>
+        <div class="text-center">
+          <p id="minutes" class="text-3xl font-light">--</p>
+          <p class="text-sm text-gray-400">Minutes</p>
+        </div>
+        <div class="text-center">
+          <p id="seconds" class="text-3xl font-light">--</p>
+          <p class="text-sm text-gray-400">Seconds</p>
+        </div>
+      </div>
+
+      <script>
+        const eventDate = new Date(
+          "{{ upcoming_event.date|date:'Y-m-d' }}T{{ upcoming_event.time|time:'H:i:s' }}"
+        );
+      </script>
+      {% else %}
+      <h2 class="text-5xl font-light text-indigo-400 leading-tight">
+        No Upcoming <br />
+        <span class="font-bold text-indigo-600">Events</span>
+      </h2>
+      <p class="mt-4 text-gray-500 text-lg">Please check back later.</p>
+      {% endif %}
+    </div>
+
+    <!-- Image Section -->
+    <div class="flex justify-center">
+      <img
+        class="w-72 md:w-80 lg:w-96 object-contain"
+        src="{% static 'images/businesswoman.png' %}"
+        alt="Speaker"
+      />
+    </div>
+  </div>
+</section>
+
+{% comment %} Speakers section {% endcomment %}
+
+<section class="mt-24">
+  <div>
+    <h1 class="text-4xl text-center">
+      Our <span class="font-bold">Speakers</span>
+    </h1>
+  </div>
+
+  <div
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto px-6 mt-32"
+  >
+    <div>
+      <img
+        class="mx-auto rounded-full w-52"
+        src="{% static 'images/female.png' %}"
+        alt=""
+      />
+      <h1 class="text-center mt-4 text-xl font-bold">Angelie Crawford</h1>
+      <p class="text-center mt-2">Web developer</p>
+    </div>
+    <div>
+      <img
+        class="mx-auto rounded-full w-52"
+        src="{% static 'images/male-1.png' %}"
+        alt=""
+      />
+      <h1 class="text-center mt-4 text-xl font-bold">Jackie Spears</h1>
+      <p class="text-center mt-2">Web developer</p>
+    </div>
+    <div>
+      <img
+        class="mx-auto rounded-full w-52"
+        src="{% static 'images/male-2.png' %}"
+        alt=""
+      />
+      <h1 class="text-center mt-4 text-xl font-bold">John Adams</h1>
+      <p class="text-center mt-2">Web developer</p>
+    </div>
+  </div>
+</section>
+
+{% comment %} Event Schedule {% endcomment %}
+
+<section class="mt-36">
+  <div class="text-center">
+    <h2 class="text-3xl">Event <span class="font-bold">Schedule</span></h2>
+  </div>
+
+  <!-- Optional Static Day Tabs -->
+  <div class="flex flex-wrap justify-center mt-20 gap-4">
+    {% for event in scheduled_events|slice:":4" %}
+    <button
+      class="px-6 py-2 rounded-md {% if forloop.first %}bg-indigo-600 text-white{% else %}bg-gray-100 text-gray-800 hover:bg-indigo-100{% endif %} font-semibold"
+    >
+      Day {{ forloop.counter|stringformat:"02d" }}<br />
+      <span class="text-sm font-normal">{{ event.date|date:"d M, Y" }}</span>
+    </button>
+    {% endfor %}
+  </div>
+
+  <!-- Dynamic Event List -->
+  <div class="mt-10 max-w-4xl mx-auto space-y-6 px-6">
+    {% if scheduled_events %} {% for event in scheduled_events|slice:":4" %}
+    <div
+      class="flex flex-col sm:flex-row items-start bg-white shadow-md p-6 rounded-lg space-x-0 sm:space-x-4"
+    >
+      <img
+        src="{% static 'images/speaker.jpg' %}"
+        class="w-16 h-16 rounded-full object-cover mb-4 sm:mb-0"
+        alt="speaker"
+      />
+      <div>
+        <p class="text-gray-500 text-sm">{{ event.time|time:"H:i" }}</p>
+        <h3 class="text-xl font-semibold text-gray-800 mt-1">
+          {{ event.name }}
+        </h3>
+        <p class="text-sm text-gray-500 mt-2">
+          {{ event.description|default:"No description available." }}
+        </p>
+        <p class="text-sm text-indigo-600 mt-2 font-medium">
+          — {{ event.category.name }}
+          <span class="text-gray-500">| {{ event.location }}</span>
+        </p>
+      </div>
+    </div>
+    {% endfor %} {% else %}
+    <p class="text-center text-gray-500">No scheduled events found.</p>
+    {% endif %}
+
+    <div class="flex justify-center ">
+      <button
+        class="mt-8 px-6 py-2 rounded-md bg-indigo-100 text-black hover:bg-indigo-600 hover:text-white font-semibold"
+      >
+        <a href="{% url 'event_list' %}">All Event</a>
+      </button>
+    </div>
+  </div>
+</section>
+
+{% comment %} Happy Clients {% endcomment %}
+
+<section class="mt-24">
+  <div>
+    <h1 class="text-4xl text-center">
+      Our <span class="font-bold">Happy Clients</span>
+    </h1>
+  </div>
+
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-14 max-w-6xl mx-auto px-6"
+  >
+    <div class="px-6 py-4 rounded-md bg-[#e4e5e5] w-full h-full">
+      <img
+        src="{% static 'images/1.jpg' %}"
+        class="w-16 h-16 rounded-full object-cover mx-auto mt-5"
+        alt="speaker"
+      />
+      <p class="text-center mt-4 italic">
+        "Excellent communication, great design sense, and quick delivery. They turned my idea into a beautiful and functional website."
+      </p>
+      <h1 class="text-center mt-4 font-semibold">Samantha Gallagher</h1>
+    </div>
+    <div
+      class="px-6 py-4 rounded-md bg-[#e4e5e5] w-full h-full"
+    >
+      <img
+        src="{% static 'images/2.jpg' %}"
+        class="w-16 h-16 rounded-full object-cover mx-auto mt-5"
+        alt="speaker"
+      />
+      <p class="text-center mt-4 italic">
+       "I loved their work! Super responsive, friendly, and creative team. The entire process was smooth and hassle-free."
+      </p>
+      <h1 class="text-center mt-4 font-semibold">Caleb Jones</h1>
+    </div>
+    <div
+      class="px-6 py-4 rounded-md bg-[#e4e5e5] w-full h-full"
+    >
+      <img
+        src="{% static 'images/3.jpg' %}"
+        class="w-16 h-16 rounded-full object-cover mx-auto mt-5"
+        alt="speaker"
+      />
+      <p class="text-center mt-4 italic">
+        "Highly recommended! They handled everything with care, delivered fast, and made sure I was happy with every detail."
+      </p>
+      <h1 class="text-center mt-4 font-semibold">Traci Howard</h1>
+    </div>
+    <div
+      class="px-6 py-4 rounded-md bg-[#e4e5e5] w-full h-full"
+    >
+      <img
+        src="{% static 'images/4.jpg' %}"
+        class="w-16 h-16 rounded-full object-cover mx-auto mt-5"
+        alt="speaker"
+      />
+      <p class="text-center mt-4 italic">
+        "Very professional and timely service. I’m happy with the final result and will definitely work with them again."
+      </p>
+      <h1 class="text-center mt-4 font-semibold">Sarah Thomas</h1>
+    </div>
+  </div>
+</section>
+
+{% comment %} footer {% endcomment %} {% endblock %}

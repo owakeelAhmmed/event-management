@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Category List{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white shadow-xl rounded-xl p-6 mt-20 px-4 sm:px-6">
+  <h1 class="text-2xl font-bold text-center mb-6">📋 Category List</h1>
+
+  <!-- Add New Button -->
+  <div class="text-center sm:text-right mb-4">
+    <a href="{% url 'category_create' %}" class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">+ Add New</a>
+  </div>
+
+  <!-- Category List -->
+  <ul class="space-y-3">
+    {% for cat in categories %}
+    <li class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gray-50 px-4 py-3 rounded shadow-sm space-y-2 sm:space-y-0">
+      <span class="text-gray-800 font-medium">{{ cat.name }}</span>
+      <div class="space-x-4 text-sm">
+        <a href="{% url 'category_update' cat.id %}" class="text-yellow-600 hover:underline">Edit</a>
+        <a href="{% url 'category_delete' cat.id %}" class="text-red-600 hover:underline">Delete</a>
+      </div>
+    </li>
+    {% empty %}
+    <li class="text-gray-500 text-center">No categories found.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
