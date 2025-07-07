@@ -11,14 +11,14 @@
   </head>
   <body class=" text-gray-900">
 
-    <!-- ✅ Include Navbar -->
+    {% comment %} <!-- Include Navbar --> {% endcomment %}
     {% include 'partials/navbar.html' %}
 
-    <!-- ✅ Page specific content -->
+    {% comment %} <!-- Page specific content --> {% endcomment %}
     {% block content %}
     {% endblock %}
 
-    <!-- ✅ Include Footer -->
+    {% comment %} <!-- Include Footer --> {% endcomment %}
     {% include 'partials/footer.html' %}
   </body>
 </html>

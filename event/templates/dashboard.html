@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="max-w-7xl mx-auto px-4 py-10 h-screen mt-20">
-  <!-- Stats Grid -->
+  {% comment %} <!-- Stats Grid --> {% endcomment %}
   <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10 text-white">
     <div class="bg-indigo-500 p-6 rounded-lg text-center">
       <h2 class="text-3xl font-bold">{{ total_participants }}</h2>
@@ -23,7 +23,7 @@
     </div>
   </div>
 
-  <!-- Today's Events -->
+  {% comment %} <!-- Today's Events --> {% endcomment %}
   <div>
     <h2 class="text-2xl font-bold mb-4">Today's Events</h2>
     {% if todays_events %}

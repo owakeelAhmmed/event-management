@@ -1,7 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -14,7 +12,7 @@ class Category(models.Model):
 class Event(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
-    date = models.DateField()               # ✅ ensure this line exists
+    date = models.DateField()             
     time = models.TimeField()
     location = models.CharField(max_length=255)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)

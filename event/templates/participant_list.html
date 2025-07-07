@@ -4,13 +4,13 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto bg-white p-6 rounded shadow mt-20">
-  <!-- Header -->
+  {% comment %} <!-- Header --> {% endcomment %}
   <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
     <h2 class="text-2xl font-bold">👥 Participant List</h2>
     <a href="{% url 'create_participant' %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 whitespace-nowrap">+ Add</a>
   </div>
 
-  <!-- Large Screen: Table View -->
+  {% comment %} <!-- Large Screen: Table View --> {% endcomment %}
   <div class="hidden md:block overflow-x-auto">
     <table class="w-full table-auto border border-gray-300">
       <thead class="bg-gray-200">
@@ -47,7 +47,7 @@
     </table>
   </div>
 
-  <!-- Small Screen: Card View -->
+  {% comment %} <!-- Small Screen: Card View --> {% endcomment %}
   <div class="md:hidden space-y-4">
     {% for p in participants %}
     <div class="border rounded-lg shadow-sm p-4">
