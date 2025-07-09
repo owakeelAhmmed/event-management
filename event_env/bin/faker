@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/media/owakeel/New Volume/Phitron/software development track/Django Project/event-management/event_env/bin/python3" "$0" "$@"
+'''exec' "/media/owakeel/New Volume1/Phitron/software development track/Django Project/event-management/event_env/bin/python3" "$0" "$@"
 ' '''
 # -*- coding: utf-8 -*-
 import re

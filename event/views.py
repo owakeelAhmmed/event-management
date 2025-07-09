@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from .models import Category, Event, Participant
 from .forms import CategoryForm, EventForm, ParticipantForm
 from django.http import JsonResponse
@@ -178,4 +179,19 @@ def event_filter_api(request, filter_type):
     event_list = list(events.values("title", "description", "date"))
     return JsonResponse(event_list, safe=False)
 
+def is_admin_or_organizer(user):
+    return user.groups.filter(name__in=['Admin', 'Organizer']).exists() or user.is_superuser
 
+@login_required
+def event_list(request):
+    q = request.GET.get('q')
+    events = Event.objects.all()
+
+    if q:
+        events = events.filter(name__icontains=q) | events.filter(location__icontains=q)
+
+    context = {
+        'events': events,
+        'is_admin_or_organizer': is_admin_or_organizer(request.user),
+    }
+    return render(request, 'event_list.html', context)

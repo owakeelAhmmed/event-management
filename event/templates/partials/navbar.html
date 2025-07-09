@@ -2,65 +2,44 @@
   <nav class="bg-white shadow">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 justify-between items-center">
-        {% comment %} <!-- Logo --> {% endcomment %}
+        {% comment %} Logo {% endcomment %}
         <div class="flex items-center">
-          
-          <a
-            href="{% url 'home' %}"
-            
-            ><h1
-            class="font-bold text-2xl bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-transparent bg-clip-text"
-          >
-            Event-M.
-          </h1></a
-          >
+          <a href="{% url 'home' %}">
+            <h1 class="font-bold text-2xl bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-transparent bg-clip-text">
+              Event-M.
+            </h1>
+          </a>
         </div>
 
-        {% comment %} <!-- Desktop Menu --> {% endcomment %}
+        {% comment %} Desktop Menu {% endcomment %}
         <div class="hidden sm:flex space-x-4">
-          <a
-            href="{% url 'home' %}"
-            class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
-            >Home</a
-          >
-          <a
-            href="{% url 'event_list' %}"
-            class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
-            >Event</a
-          >
-          <a
-            href="{% url 'category_list' %}"
-            class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
-            >Category</a
-          >
-          <a
-            href="{% url 'participant_list' %}"
-            class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
-            >Participant</a
-          >
-
-          <a
-            href="{% url 'dashboard' %}"
-            class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
-            >Dashboard</a
-          >
+          {% if user.is_authenticated %}
+            {% with user.groups.first.name as role %}
+              {% if role == "Admin" %}
+                <a href="{% url 'event_list' %}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Event</a>
+                <a href="{% url 'category_list' %}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Category</a>
+                <a href="{% url 'participant_list' %}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Participant</a>
+                <a href="{% url 'dashboard' %}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+              {% elif role == "Organizer" %}
+                <a href="{% url 'event_list' %}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Event</a>
+                <a href="{% url 'category_list' %}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Category</a>
+                <a href="{% url 'dashboard' %}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+              {% elif role == "Participant" %}
+                <a href="{% url 'event_list' %}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Event</a>
+              {% endif %}
+            {% endwith %}
+            <p class="text-sm text-gray-600">Hello, {{ user.username }}</p>
+            <a class="bg-indigo-600 p-2 rounded text-white" href="{% url 'logout' %}">Logout</a>
+          {% else %}
+            <a class="bg-indigo-600 p-2 rounded text-white" href="{% url 'login' %}">Login</a>
+            <a class="bg-indigo-600 p-2 rounded text-white" href="{% url 'signup' %}">Signup</a>
+          {% endif %}
         </div>
 
-        {% comment %} <!-- Mobile menu button --> {% endcomment %}
+        {% comment %} Mobile menu button {% endcomment %}
         <div class="sm:hidden">
-          <button
-            id="mobile-menu-button"
-            class="text-gray-500 hover:text-indigo-600 focus:outline-none"
-          >
-            <svg
-              class="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
+          <button id="mobile-menu-button" class="text-gray-500 hover:text-indigo-600 focus:outline-none">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
@@ -68,41 +47,35 @@
       </div>
     </div>
 
-    {% comment %} <!-- Mobile Menu (hidden by default) --> {% endcomment %}
+    {% comment %} Mobile Menu {% endcomment %}
     <div id="mobile-menu" class="sm:hidden hidden px-4 pb-4">
-      <a
-        href="{% url 'home' %}"
-        class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
-        >Home</a
-      >
-      <a
-        href="{% url 'event_list' %}"
-        class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
-        >Event</a
-      >
-      <a
-        href="{% url 'category_list' %}"
-        class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
-        >Category</a
-      >
-      <a
-        href="{% url 'participant_list' %}"
-        class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
-        >Participant</a
-      >
-
-      <a
-        href="{% url 'dashboard' %}"
-        class="block text-gray-700 hover:text-indigo-600 py-2 text-sm"
-        >Dashboard</a
-      >
+      {% if user.is_authenticated %}
+        {% with user.groups.first.name as role %}
+          {% if role == "Admin" %}
+            <a href="{% url 'event_list' %}" class="block text-gray-700 py-2">Event</a>
+            <a href="{% url 'category_list' %}" class="block text-gray-700 py-2">Category</a>
+            <a href="{% url 'participant_list' %}" class="block text-gray-700 py-2">Participant</a>
+            <a href="{% url 'dashboard' %}" class="block text-gray-700 py-2">Dashboard</a>
+          {% elif role == "Organizer" %}
+            <a href="{% url 'event_list' %}" class="block text-gray-700 py-2">Event</a>
+            <a href="{% url 'category_list' %}" class="block text-gray-700 py-2">Category</a>
+            <a href="{% url 'dashboard' %}" class="block text-gray-700 py-2">Dashboard</a>
+          {% elif role == "Participant" %}
+            <a href="{% url 'event_list' %}" class="block text-gray-700 py-2">Event</a>
+          {% endif %}
+        {% endwith %}
+        <p class="text-sm text-gray-600">Hello, {{ user.username }}</p>
+        <a class="bg-indigo-600 p-2 mt-2 inline-block rounded text-white" href="{% url 'logout' %}">Logout</a>
+      {% else %}
+        <a class="bg-indigo-600 p-2 mt-2 inline-block rounded text-white" href="{% url 'login' %}">Login</a>
+        <a class="bg-indigo-600 p-2 mt-2 inline-block rounded text-white" href="{% url 'signup' %}">Signup</a>
+      {% endif %}
     </div>
   </nav>
 
   <script>
     const btn = document.getElementById("mobile-menu-button");
     const menu = document.getElementById("mobile-menu");
-
     btn.addEventListener("click", () => {
       menu.classList.toggle("hidden");
     });

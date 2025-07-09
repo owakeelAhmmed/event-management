@@ -5,5 +5,6 @@ from event.views import home
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
-    path('event/', include('event.urls'))
+    path('event/', include('event.urls')),
+    path('user/', include('user.urls'))
 ]
