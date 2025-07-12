@@ -68,23 +68,23 @@ TEMPLATES = [
 WSGI_APPLICATION = 'event_management.wsgi.application'
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
-    }
-}
-
 # DATABASES = {
-#     'default': dj_database_url.config(
-#         default='postgresql://event_management_db_p25j_user:Uz3w9SQrSjCqylwo3X5uldVImS5m1KDL@dpg-d1lo2o2dbo4c73a5iarg-a.oregon-postgres.render.com/event_management_db_p25j',
-#         conn_max_age=600
-#     )
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('DB_NAME'),
+#         'USER': config('DB_USER'),
+#         'PASSWORD': config('DB_PASSWORD'),
+#         'HOST': config('DB_HOST'),
+#         'PORT': config('DB_PORT'),
+#     }
 # }
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default='postgresql://event_management_db_p25j_user:Uz3w9SQrSjCqylwo3X5uldVImS5m1KDL@dpg-d1lo2o2dbo4c73a5iarg-a.oregon-postgres.render.com/event_management_db_p25j',
+        conn_max_age=600
+    )
+}
 
 
 EMAIL_BACKEND = config('EMAIL_BACKEND')
