@@ -20,7 +20,14 @@ urlpatterns = [
     path('participants/create/', views.create_participant, name='create_participant'),
     path('participants/update/<int:pk>/', views.update_participant, name='update_participant'),
     path('participants/delete/<int:pk>/', views.delete_participant, name='delete_participant'),
+    
 
     path("dashboard/", views.dashboard, name="dashboard"),
-    path("api/events/<str:filter_type>/", views.event_filter_api, name="event_filter_api")
+    path("api/events/<str:filter_type>/", views.event_filter_api, name="event_filter_api"),
+    path('events/<int:event_id>/', views.event_detail, name='event_detail'),
+
+    path('rsvp/<int:event_id>/', views.rsvp_event, name='rsvp_event'),
+
+    path('dashboard/', views.participant_dashboard, name='participant_dashboard'),
+
 ]

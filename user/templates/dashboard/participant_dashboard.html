@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Participant Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-6">👤 Participant Dashboard</h1>
+
+  <h2 class="text-xl font-semibold mb-4">Your RSVP’d Events</h2>
+
+  {% if rsvped_events %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {% for event in rsvped_events %}
+        <div class="bg-white p-4 rounded-lg shadow hover:shadow-lg transition">
+          <h3 class="text-lg font-semibold text-gray-800">{{ event.name }}</h3>
+          <p class="text-sm text-gray-600 mt-1">{{ event.description|truncatechars:100 }}</p>
+          <p class="text-sm text-gray-500 mt-2">📍 {{ event.location }}</p>
+          <p class="text-xs text-gray-400 mt-1">📅 {{ event.date }} ⏰ {{ event.time }}</p>
+          <a href="{% url 'event_detail' event.id %}" class="inline-block mt-3 bg-indigo-600 text-white px-4 py-1 text-sm rounded hover:bg-indigo-700">View Details</a>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-gray-600">You haven't RSVP’d to any events yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

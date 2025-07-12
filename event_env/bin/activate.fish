@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV '/media/owakeel/New Volume1/Phitron/software development track/Django Project/event-management/event_env'
+set -gx VIRTUAL_ENV '/media/owakeel/New Volume/Phitron/software development track/Django Project/event-management/event_env'
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/"bin $PATH

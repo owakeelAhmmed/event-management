@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from .models import Category, Event, Participant
 from .forms import CategoryForm, EventForm, ParticipantForm
 from django.http import JsonResponse
+from django.contrib import messages
+from django.core.mail import send_mail
 from django.utils import timezone
 from django.db.models import Q
 from datetime import date
@@ -31,7 +33,11 @@ def category_create(request):
         form = CategoryForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('category_list')
+            if request.user.is_superuser:
+                return redirect('admin_dashboard')
+            elif request.user.groups.filter(name='Organizer').exists():
+                return redirect('organizer_dashboard')
+            return redirect('event_list')
     else:
         form = CategoryForm()
     return render(request, 'category_form.html', {'form': form})
@@ -43,7 +49,11 @@ def category_update(request, pk):
         form = CategoryForm(request.POST, instance=category)
         if form.is_valid():
             form.save()
-            return redirect('category_list')
+            if request.user.is_superuser:
+                return redirect('admin_dashboard')
+            elif request.user.groups.filter(name='Organizer').exists():
+                return redirect('organizer_dashboard')
+            return redirect('event_list')
     else:
         form = CategoryForm(instance=category)
     return render(request, 'category_form.html', {'form': form})
@@ -53,49 +63,17 @@ def category_delete(request, pk):
     category = get_object_or_404(Category, pk=pk)
     if request.method == 'POST':
         category.delete()
-        return redirect('category_list')
+        if request.user.is_superuser:
+            return redirect('admin_dashboard')
+        elif request.user.groups.filter(name='Organizer').exists():
+            return redirect('organizer_dashboard')
+        return redirect('event_list')
     return render(request, 'category_confirm_delete.html', {'category': category})
 
 
 # ===========Event==============
-
 def event_list(request):
-    events = Event.objects.select_related('category').all()
-    return render(request, 'event_list.html', {'events': events})
-
-def create_event(request):
-    if request.method == 'POST':
-        form = EventForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('event_list')
-    else:
-        form = EventForm()
-    return render(request, 'event_form.html', {'form': form})
-
-
-def update_event(request, pk):
-    event = get_object_or_404(Event, pk=pk)
-    if request.method == 'POST':
-        form = EventForm(request.POST, instance=event)
-        if form.is_valid():
-            form.save()
-            return redirect('event_list')
-    else:
-        form = EventForm(instance=event)
-    return render(request, 'event_form.html', {'form': form})
-
-
-
-def delete_event(request, pk):
-    event = get_object_or_404(Event, pk=pk)
-    event.delete()
-    return redirect('event_list')
-
-
-def event_list(request):
-    query = request.GET.get('q')  # ?q=something
-
+    query = request.GET.get('q') 
     if query:
         events = Event.objects.filter(
             Q(name__icontains=query) | Q(location__icontains=query)
@@ -109,6 +87,56 @@ def event_list(request):
     return render(request, 'event_list.html', context)
 
 
+#  Create Event View
+def create_event(request):
+    if request.method == 'POST':
+        form = EventForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            if request.user.is_superuser:
+                return redirect('admin_dashboard')
+            elif request.user.groups.filter(name='Organizer').exists():
+                return redirect('organizer_dashboard')
+            return redirect('event_list')
+    else:
+        form = EventForm()
+    return render(request, 'event_form.html', {'form': form})
+
+
+#  Event Detail View
+def event_detail(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    return render(request, 'event_detail.html', {'event': event})
+
+
+#  Update Event View
+def update_event(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+    if request.method == 'POST':
+        form = EventForm(request.POST, request.FILES, instance=event)
+        if form.is_valid():
+            form.save()
+            if request.user.is_superuser:
+                return redirect('admin_dashboard')
+            elif request.user.groups.filter(name='Organizer').exists():
+                return redirect('organizer_dashboard')
+            return redirect('event_list')
+    else:
+        form = EventForm(instance=event)
+    return render(request, 'event_form.html', {'form': form})
+
+
+#  Delete Event View
+def delete_event(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+    if request.method == 'POST':
+        event.delete()
+        if request.user.is_superuser:
+            return redirect('admin_dashboard')
+        elif request.user.groups.filter(name='Organizer').exists():
+            return redirect('organizer_dashboard')
+        return redirect('event_list')
+    return render(request, 'event_confirm_delete.html', {'event': event})
 
 # ================Participant===================
 
@@ -122,6 +150,8 @@ def create_participant(request):
         form = ParticipantForm(request.POST)
         if form.is_valid():
             form.save()
+            if request.user.is_superuser:
+                return redirect('admin_dashboard')
             return redirect('participant_list')
     else:
         form = ParticipantForm()
@@ -134,6 +164,8 @@ def update_participant(request, pk):
         form = ParticipantForm(request.POST, instance=participant)
         if form.is_valid():
             form.save()
+            if request.user.is_superuser:
+                return redirect('admin_dashboard')
             return redirect('participant_list')
     else:
         form = ParticipantForm(instance=participant)
@@ -143,6 +175,8 @@ def update_participant(request, pk):
 def delete_participant(request, pk):
     participant = get_object_or_404(Participant, pk=pk)
     participant.delete()
+    if request.user.is_superuser:
+        return redirect('admin_dashboard')
     return redirect('participant_list')
 
 
@@ -195,3 +229,31 @@ def event_list(request):
         'is_admin_or_organizer': is_admin_or_organizer(request.user),
     }
     return render(request, 'event_list.html', context)
+
+
+@login_required
+def rsvp_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+
+    if request.user in event.rsvps.all():
+        messages.info(request, "You have already RSVP'd for this event.")
+    else:
+        event.rsvps.add(request.user)
+        messages.success(request, "You have successfully RSVP'd for the event.")
+
+        send_mail(
+            subject="RSVP Confirmation",
+            message=f"Hi {request.user.username}, you have successfully RSVP’d to {event.name}.",
+            from_email="noreply@event.com",
+            recipient_list=[request.user.email],
+            fail_silently=True,
+        )
+    return redirect('event_list')
+
+@login_required
+def participant_dashboard(request):
+    rsvped_events = request.user.rsvp_events.all() 
+    
+    return render(request, 'event/participant_dashboard.html', {
+        'rsvped_events': rsvped_events
+    })

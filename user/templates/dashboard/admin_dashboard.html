@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-6">🛠 Admin Dashboard</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 border p-5">
+    <!-- 🟢 Events Column -->
+     
+    <div class="md:col-span-1 bg-gray-300 shadow rounded-lg p-4 h-[500px] overflow-y-auto">
+        <div class="bg-white sticky top-0 z-10 rounded p-5 flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold">📅 Event List</h2>
+        <a href="{% url 'create_event' %}" class="bg-blue-500 text-white text-sm px-3 py-1 rounded hover:bg-blue-600">+ Add</a>
+      </div>
+        <div >
+      {% if events %}
+        <div class="space-y-4">
+          {% for event in events %}
+            <div class="border rounded p-3 shadow-sm hover:shadow-md transition">
+              <h3 class="text-md font-semibold text-gray-800">{{ event.name }}</h3>
+              <p class="text-sm text-gray-500">{{ event.date }} ⏰ {{ event.time }}</p>
+              <p class="text-sm text-gray-500">📍 {{ event.location }}</p>
+              <div class="flex flex-wrap gap-2 mt-2">
+                <a href="{% url 'update_event' event.id %}" class="text-sm px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Edit</a>
+                <a href="{% url 'delete_event' event.id %}" class="text-sm px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">Delete</a>
+                <a href="{% url 'event_detail' event.id %}" class="text-sm px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Details</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-gray-600">No events available.</p>
+      {% endif %}
+    </div>
+    </div>
+
+    <!-- 🔵 Right Column: Categories & Participants -->
+    <div class="md:col-span-2 flex flex-col gap-6">
+
+      <!-- Categories -->
+      <div class="bg-gray-300 shadow rounded-lg p-4 h-[240px] overflow-y-auto">
+        <div class="bg-white sticky top-0 z-10 rounded p-5 flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold">📂 Categories</h2>
+          <a href="{% url 'category_create' %}" class="bg-blue-500 text-white text-sm px-3 py-1 rounded hover:bg-blue-600">+ Add</a>
+        </div>
+
+        {% if categories %}
+          <div class="space-y-3">
+            {% for category in categories %}
+              <div class="border rounded p-3 shadow-sm hover:shadow-md transition">
+                <h3 class="text-md font-semibold text-gray-800">{{ category.name }}</h3>
+                <div class="flex flex-wrap gap-2 mt-2">
+                  <a href="{% url 'category_update' category.id %}" class="text-sm px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Edit</a>
+                  <a href="{% url 'category_delete' category.id %}" class="text-sm px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">Delete</a>
+                  {% comment %} <a href="{% url 'category_detail' category.id %}" class="text-sm px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Details</a> {% endcomment %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>No categories found.</p>
+        {% endif %}
+      </div>
+
+      <!-- Participants -->
+      <div class="bg-gray-300 shadow rounded-lg p-4 h-[240px] overflow-y-auto">
+        <div class="bg-white sticky top-0 z-10 rounded p-5 flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold">👥 Participants</h2>
+          <a href="{% url 'create_participant' %}" class="bg-blue-500 text-white text-sm px-3 py-1 rounded hover:bg-blue-600">+ Add</a>
+        </div>
+
+        {% if participants %}
+          <div class="space-y-3">
+            {% for user in participants %}
+              <div class="border rounded p-3 shadow-sm hover:shadow-md transition">
+                <p class="font-medium">{{ user.username }}</p>
+                <p class="text-sm text-gray-500">{{ user.email }}</p>
+                <div class="flex flex-wrap gap-2 mt-2">
+                  <a href="{% url 'update_participant' user.id %}" class="text-sm px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Edit</a>
+                  <a href="{% url 'delete_participant' user.id %}" class="text-sm px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">Delete</a>
+                  {% comment %} <a href="{% url 'participant_detail' user.id %}" class="text-sm px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Details</a> {% endcomment %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>No participants registered.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- 📊 Stats Grid -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-6 my-10 text-white">
+    <div class="bg-indigo-500 p-6 rounded-lg text-center">
+      <h2 class="text-3xl font-bold">{{ total_participants }}</h2>
+      <p class="mt-2">Participants</p>
+    </div>
+    <div class="bg-blue-500 p-6 rounded-lg text-center">
+      <h2 class="text-3xl font-bold">{{ total_events }}</h2>
+      <p class="mt-2">Total Events</p>
+    </div>
+    <div class="bg-green-500 p-6 rounded-lg text-center">
+      <h2 class="text-3xl font-bold">{{ upcoming_events }}</h2>
+      <p class="mt-2">Upcoming Events</p>
+    </div>
+    <div class="bg-red-500 p-6 rounded-lg text-center">
+      <h2 class="text-3xl font-bold">{{ past_events }}</h2>
+      <p class="mt-2">Past Events</p>
+    </div>
+  </div>
+
+  <!-- 📅 Today's Events -->
+  <div>
+    <h2 class="text-2xl font-bold mb-4">Today's Events</h2>
+    {% if todays_events %}
+      <ul class="space-y-4">
+        {% for event in todays_events %}
+        <li class="bg-gray-100 p-4 rounded-md shadow">
+          <h3 class="font-semibold text-lg">{{ event.name }}</h3>
+          <p class="text-sm text-gray-600">{{ event.description }}</p>
+          <p class="text-sm text-gray-500">Date: {{ event.date }}</p>
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No events today.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -23,7 +23,8 @@ class CategoryForm(forms.ModelForm):
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ['name', 'description', 'date', 'time', 'location', 'category']
+        fields = ['name', 'description', 'date', 'time', 'location', 'category', 'image']
+        
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500',
@@ -48,6 +49,9 @@ class EventForm(forms.ModelForm):
             }),
             'category': forms.Select(attrs={
                 'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500',
+            }),
+            'image': forms.ClearableFileInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100',
             }),
         }
 

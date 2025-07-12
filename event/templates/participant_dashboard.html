@@ -1,0 +1,11 @@
+<h2 class="text-xl font-bold mb-4">🎟️ Your RSVP’d Events</h2>
+<ul class="space-y-2">
+  {% for event in rsvped_events %}
+    <li class="p-4 border rounded shadow-sm">
+      <strong>{{ event.name }}</strong><br>
+      📅 {{ event.date }} | ⏰ {{ event.time }} | 📍 {{ event.location }}
+    </li>
+  {% empty %}
+    <p>You haven’t RSVP’d to any events yet.</p>
+  {% endfor %}
+</ul>

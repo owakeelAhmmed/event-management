@@ -1,5 +1,8 @@
 import dj_database_url
 from pathlib import Path
+from decouple import config
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,7 +16,7 @@ LOGOUT_REDIRECT_URL = 'login'
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9$a-+qqi4xq9wo)682di-zoem64f2^x2wi7_*xe#eflr376%gk'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -68,21 +71,31 @@ WSGI_APPLICATION = 'event_management.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'event_management',
-        'USER': 'postgres',
-        'PASSWORD': '1234',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
 }
 
 # DATABASES = {
 #     'default': dj_database_url.config(
-#         # Replace this value with your local database's connection string.
 #         default='postgresql://event_management_db_p25j_user:Uz3w9SQrSjCqylwo3X5uldVImS5m1KDL@dpg-d1lo2o2dbo4c73a5iarg-a.oregon-postgres.render.com/event_management_db_p25j',
 #         conn_max_age=600
 #     )
 # }
+
+
+EMAIL_BACKEND = config('EMAIL_BACKEND')
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD =config('EMAIL_HOST_PASSWORD')
+
+
+
 
 
 # Database
@@ -135,6 +148,11 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
     
 ]
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+
 
 
 class Category(models.Model):
@@ -16,6 +18,15 @@ class Event(models.Model):
     time = models.TimeField()
     location = models.CharField(max_length=255)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+    rsvps = models.ManyToManyField(User, related_name="rsvps", blank=True)
+
+    image = models.ImageField(
+        upload_to='event_images/', 
+        blank=True,
+        null=True,
+        default='event_images/Default.jpg'
+    )
 
     def __str__(self):
         return self.name
