@@ -1,0 +1,21 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "assignment-2",
+    "main",
+    "mid-term-exam",
+    "origin"
+  ],
+  "parent": {
+    "assignment-2": "main",
+    "main": null,
+    "mid-term-exam": "main",
+    "origin": "main"
+  },
+  "order": [
+    "main",
+    "assignment-2",
+    "mid-term-exam",
+    "origin"
+  ]
+}
