@@ -7,7 +7,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
-from django.contrib.auth.models import Group, User
 from django.urls import reverse
 from user.forms import SignUpForm, LoginForm
 from event.forms import CategoryForm
@@ -16,6 +15,19 @@ from django.contrib.auth.decorators import login_required
 from event.models import Event, Category
 from django.utils.timezone import now
 from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import TemplateView
+from .forms import ProfileUpdateForm, CustomUserChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+
+
 
 def signup_view(request):
     if request.method == 'POST':
@@ -138,31 +150,65 @@ def view_event_list(request):
 #         'participants': participants,
 #     })
 
-def admin_dashboard(request):
-    if not request.user.is_authenticated or not request.user.is_superuser:
+# def admin_dashboard(request):
+#     if not request.user.is_authenticated or not request.user.is_superuser:
+#         return redirect('login')
+    
+#     events = Event.objects.all()
+#     categories = Category.objects.all()
+#     participants = User.objects.filter(groups__name='Participant')
+
+#     total_events = events.count()
+#     total_participants = participants.count()
+#     upcoming_events = events.filter(date__gte=now().date()).count()
+#     past_events = events.filter(date__lt=now().date()).count()
+#     todays_events = events.filter(date=now().date())
+
+#     context = {
+#         'events': events,
+#         'categories': categories,
+#         'participants': participants,
+#         'total_events': total_events,
+#         'total_participants': total_participants,
+#         'upcoming_events': upcoming_events,
+#         'past_events': past_events,
+#         'todays_events': todays_events,
+#     }
+#     return render(request, 'dashboard/admin_dashboard.html', context)
+
+
+class AdminDashbordView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'dashboard/admin_dashboard.html'
+
+    def test_func(self):
+        return self.request.user.is_superuser
+    
+    def handle_no_permission(self):
         return redirect('login')
     
-    events = Event.objects.all()
-    categories = Category.objects.all()
-    participants = User.objects.filter(groups__name='Participant')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    total_events = events.count()
-    total_participants = participants.count()
-    upcoming_events = events.filter(date__gte=now().date()).count()
-    past_events = events.filter(date__lt=now().date()).count()
-    todays_events = events.filter(date=now().date())
+        events = Event.objects.all()
+        categories = Category.objects.all()
+        participants = User.objects.filter(groups__name = 'Participant')
 
-    context = {
-        'events': events,
-        'categories': categories,
-        'participants': participants,
-        'total_events': total_events,
-        'total_participants': total_participants,
-        'upcoming_events': upcoming_events,
-        'past_events': past_events,
-        'todays_events': todays_events,
-    }
-    return render(request, 'dashboard/admin_dashboard.html', context)
+
+        context['events'] = events
+        context['categories'] = categories
+        context['participants'] = participants
+        context['total_events'] = events.count()
+        context['total_participants'] = participants.count()
+        context['upcoming_events'] = events.filter(date__gte = now().date()).count()
+        context['past_events'] = events.filter(date__lt=now().date()).count()
+        context['todays_events'] = events.filter(date=now().date())
+
+        return context
+
+
+
+
+
 
 def category_list(request):
     categories = Category.objects.all()
@@ -226,3 +272,34 @@ def participant_dashboard(request):
     return render(request, 'dashboard/participant_dashboard.html', {
         'rsvped_events': rsvped_events,
     })
+
+# Profile View
+@login_required
+def profile_view(request):
+    return render(request, 'user/profile.html', {'user': request.user})
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        form = CustomUserChangeForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = CustomUserChangeForm(instance=request.user)
+    return render(request, 'user/edit_profile.html', {'form': form})
+
+
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            return redirect('profile')
+    else:
+        form = PasswordChangeForm(user=request.user)
+    return render(request, 'user/change_password.html', {'form': form})

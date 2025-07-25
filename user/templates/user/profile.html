@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
+  <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-6 space-y-4">
+    <h2 class="text-2xl font-bold text-center text-indigo-600">My Profile</h2>
+
+    <div class="flex flex-col items-center space-y-2">
+      <img src="{{ user.profile_picture.url }}" alt="Profile Picture"
+           class="w-24 h-24 rounded-full object-cover border-2 border-indigo-500 shadow">
+      <p class="text-lg font-semibold text-gray-700">{{ user.username }}</p>
+    </div>
+
+    <div class="space-y-2 text-gray-600">
+      <p><span class="font-medium">Full Name:</span> {{ user.first_name }} {{ user.last_name }}</p>
+      <p><span class="font-medium">Email:</span> {{ user.email }}</p>
+      <p><span class="font-medium">Phone:</span> {{ user.phone_number }}</p>
+    </div>
+
+    <div class="flex justify-between mt-4">
+      <a href="{% url 'edit_profile' %}" class="text-indigo-600 hover:underline font-medium">Edit Profile</a>
+      <a href="{% url 'change_password' %}" class="text-red-600 hover:underline font-medium">Change Password</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -3,7 +3,7 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 justify-between items-center">
 
-        <!-- 🔷 Logo -->
+        {% comment %} <!--  Logo --> {% endcomment %}
         <div class="flex items-center">
           <a href="{% url 'home' %}">
             <h1 class="font-bold text-2xl bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-transparent bg-clip-text">
@@ -12,7 +12,7 @@
           </a>
         </div>
 
-        <!-- 🔷 Desktop Menu -->
+        {% comment %} <!--  Desktop Menu --> {% endcomment %}
         <div class="hidden sm:flex space-x-4 items-center">
           <a href="{% url 'home' %}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Home</a>
           {% if user.is_authenticated %}
@@ -33,16 +33,18 @@
               {% endif %}
             {% endwith %}
 
-            <!-- Profile Dropdown -->
+            {% comment %} <!-- Profile Dropdown --> {% endcomment %}
             <div class="relative" x-data="{ open: false }">
               <button @click="open = !open" class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-lg font-semibold focus:outline-none">
                 {{ user.username|slice:":1"|upper }}
               </button>
 
-              <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md py-2 z-50">
-                <p class="px-4 py-2 text-sm text-gray-700">Hello, {{ user.username }}</p>
-                <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
-              </div>
+             <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md py-2 z-50">
+  <p class="px-4 py-2 text-sm text-gray-700">Hello, {{ user.username }}</p>
+  <a href="{% url 'profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+  <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
+</div>
+
             </div>
           {% else %}
             <a class="bg-indigo-600 px-3 py-1 font-semibold rounded text-white text-sm" href="{% url 'login' %}">Login</a>
@@ -50,7 +52,7 @@
           {% endif %}
         </div>
 
-        <!-- 🔷 Mobile Menu Button -->
+        {% comment %} <!--  Mobile Menu Button --> {% endcomment %}
         <div class="sm:hidden">
           <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-gray-500 hover:text-indigo-600 focus:outline-none">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2"
@@ -62,7 +64,7 @@
       </div>
     </div>
 
-    <!-- 🔷 Mobile Menu -->
+    {% comment %} <!--  Mobile Menu --> {% endcomment %}
     <div x-show="mobileMenuOpen" x-transition class="sm:hidden px-4 pb-4 space-y-2 bg-white shadow-inner z-40">
       <a href="{% url 'home' %}" class="block text-gray-700 py-2">Home</a>
       {% if user.is_authenticated %}
@@ -79,6 +81,7 @@
           {% endif %}
         {% endwith %}
         <p class="text-sm text-gray-600 mt-2">Hello, {{ user.username }}</p>
+        <a href="{% url 'profile' %}" class="block text-gray-700 py-2">Profile</a>
         <a class="bg-indigo-600 px-3 py-1 font-semibold inline-block rounded text-white" href="{% url 'logout' %}">Logout</a>
       {% else %}
         <a class="bg-indigo-600 px-3 py-1 font-semibold inline-block rounded text-white" href="{% url 'login' %}">Login</a>
@@ -87,6 +90,6 @@
     </div>
   </nav>
 
-  <!-- AlpineJS -->
+  {% comment %} <!-- AlpineJS --> {% endcomment %}
   <script src="//unpkg.com/alpinejs" defer></script>
 </section>
