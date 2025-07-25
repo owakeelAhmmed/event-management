@@ -2,3 +2,5 @@ node_modules
 event_env/
 __pycache__/
 .env
+*.pyc
+__pycache__/
