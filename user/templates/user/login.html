@@ -21,7 +21,15 @@
         Login
       </button>
     </form>
-    <p class="text-center text-sm text-gray-600">
+
+    {% comment %} <!-- Forgot Password Links --> {% endcomment %}
+    <div class="text-center mt-2">
+      <a href="{% url 'password_reset' %}" class="text-sm text-indigo-600 hover:underline">
+        Forgot your password?
+      </a>
+    </div>
+
+    <p class="text-center text-sm text-gray-600 mt-4">
       Don’t have an account?
       <a href="{% url 'signup' %}" class="text-indigo-600 hover:underline">Sign up here</a>
     </p>

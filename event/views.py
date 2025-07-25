@@ -8,6 +8,12 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from django.db.models import Q
 from datetime import date
+from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
+
+
 
 
 
@@ -72,35 +78,64 @@ def category_delete(request, pk):
 
 
 # ===========Event==============
-def event_list(request):
-    query = request.GET.get('q') 
-    if query:
-        events = Event.objects.filter(
-            Q(name__icontains=query) | Q(location__icontains=query)
-        )
-    else:
-        events = Event.objects.all()
+# def event_list(request):
+#     query = request.GET.get('q') 
+#     if query:
+#         events = Event.objects.filter(
+#             Q(name__icontains=query) | Q(location__icontains=query)
+#         )
+#     else:
+#         events = Event.objects.all()
 
-    context = {
-        'events': events,
-    }
-    return render(request, 'event_list.html', context)
+#     context = {
+#         'events': events,
+#     }
+#     return render(request, 'event_list.html', context)
+
+class EventListView(ListView):
+    model = Event
+    template_name = 'event_list.html'
+    context_object_name = 'events'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if query:
+            return Event.objects.filter(
+                Q(name__icontains = query) | Q(location__icontains = query)
+            )
+        return Event.objects.all()
+    
 
 
 #  Create Event View
-def create_event(request):
-    if request.method == 'POST':
-        form = EventForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            if request.user.is_superuser:
-                return redirect('admin_dashboard')
-            elif request.user.groups.filter(name='Organizer').exists():
-                return redirect('organizer_dashboard')
-            return redirect('event_list')
-    else:
-        form = EventForm()
-    return render(request, 'event_form.html', {'form': form})
+# def create_event(request):
+#     if request.method == 'POST':
+#         form = EventForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             form.save()
+#             if request.user.is_superuser:
+#                 return redirect('admin_dashboard')
+#             elif request.user.groups.filter(name='Organizer').exists():
+#                 return redirect('organizer_dashboard')
+#             return redirect('event_list')
+#     else:
+#         form = EventForm()
+#     return render(request, 'event_form.html', {'form': form})
+
+class EventCreateView(LoginRequiredMixin, CreateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'event_form.html'
+
+    def form_valid(self, form):
+        form.save()
+        user = self.request.user
+        if user.is_superuser:
+            return redirect ('admin_dashboard')
+        elif user.groups.filter(name='Organizer').exists():
+            return redirect('organizer_dashboard')
+        return redirect('event_list')
+    
 
 
 #  Event Detail View
@@ -110,33 +145,70 @@ def event_detail(request, event_id):
 
 
 #  Update Event View
-def update_event(request, pk):
-    event = get_object_or_404(Event, pk=pk)
-    if request.method == 'POST':
-        form = EventForm(request.POST, request.FILES, instance=event)
-        if form.is_valid():
-            form.save()
-            if request.user.is_superuser:
-                return redirect('admin_dashboard')
-            elif request.user.groups.filter(name='Organizer').exists():
-                return redirect('organizer_dashboard')
-            return redirect('event_list')
-    else:
-        form = EventForm(instance=event)
-    return render(request, 'event_form.html', {'form': form})
+# def update_event(request, pk):
+#     event = get_object_or_404(Event, pk=pk)
+#     if request.method == 'POST':
+#         form = EventForm(request.POST, request.FILES, instance=event)
+#         if form.is_valid():
+#             form.save()
+#             if request.user.is_superuser:
+#                 return redirect('admin_dashboard')
+#             elif request.user.groups.filter(name='Organizer').exists():
+#                 return redirect('organizer_dashboard')
+#             return redirect('event_list')
+#     else:
+#         form = EventForm(instance=event)
+#     return render(request, 'event_form.html', {'form': form})
+
+
+class EventUpdateView(LoginRequiredMixin, UpdateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'event_form.html'
+    context_object_name = 'event'
+
+    def form_valid(self, form):
+        form.save()
+
+        user = self.request.user
+        if user.is_superuser:
+            return redirect('admin_dashboard')
+        elif user.groups.filter(name='Organizer').exists():
+            return redirect('organizer_dashboard')
+        return redirect('event_list')
+
+
 
 
 #  Delete Event View
-def delete_event(request, pk):
-    event = get_object_or_404(Event, pk=pk)
-    if request.method == 'POST':
-        event.delete()
-        if request.user.is_superuser:
+# def delete_event(request, pk):
+#     event = get_object_or_404(Event, pk=pk)
+#     if request.method == 'POST':
+#         event.delete()
+#         if request.user.is_superuser:
+#             return redirect('admin_dashboard')
+#         elif request.user.groups.filter(name='Organizer').exists():
+#             return redirect('organizer_dashboard')
+#         return redirect('event_list')
+#     return render(request, 'event_confirm_delete.html', {'event': event})
+
+
+class EventDeleteView(LoginRequiredMixin, DeleteView):
+    model = Event
+    template_name = 'event_confirm_delete.html'
+    context_object_name = 'event'
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+
+        user = self.request.user
+        if user.is_superuser:
             return redirect('admin_dashboard')
-        elif request.user.groups.filter(name='Organizer').exists():
+        elif user.groups.filter(name = 'Organizer').exists():
             return redirect('organizer_dashboard')
         return redirect('event_list')
-    return render(request, 'event_confirm_delete.html', {'event': event})
+
 
 # ================Participant===================
 

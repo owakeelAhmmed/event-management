@@ -7,6 +7,7 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+AUTH_USER_MODEL = 'user.CustomUser'
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
@@ -36,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'event',
     'user',
+    'widget_tweaks'
 ]
 
 MIDDLEWARE = [
@@ -79,12 +81,12 @@ WSGI_APPLICATION = 'event_management.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default='postgresql://event_management_db_p25j_user:Uz3w9SQrSjCqylwo3X5uldVImS5m1KDL@dpg-d1lo2o2dbo4c73a5iarg-a.oregon-postgres.render.com/event_management_db_p25j',
-        conn_max_age=600
-    )
-}
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default='postgresql://event_management_db_p25j_user:Uz3w9SQrSjCqylwo3X5uldVImS5m1KDL@dpg-d1lo2o2dbo4c73a5iarg-a.oregon-postgres.render.com/event_management_db_p25j',
+#         conn_max_age=600
+#     )
+# }
 
 
 EMAIL_BACKEND = config('EMAIL_BACKEND')
@@ -101,12 +103,12 @@ EMAIL_HOST_PASSWORD =config('EMAIL_HOST_PASSWORD')
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation
